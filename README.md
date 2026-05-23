@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/gbt-logo.jpeg" alt="GBT Logo" width="200" />
+  <img src="https://github.com/luuduccanh34/gbt-core/blob/main/assets/gbt-logo.jpeg?raw=true" alt="GBT Logo" width="200" />
 </p>
 
 # Graph Build Tool (GBT)
@@ -16,16 +16,16 @@
 
 ### Installation
 
-Install `gbt-core` utilizing `pip` or your favorite Python package manager:
+Install `gbt-core` utilizing `pip` or your favorite Python package manager. To include Neo4j connector capabilities, install with the `neo4j` extra:
 
 ```bash
-pip install gbt-core
+pip install "gbt-core[neo4j]"
 ```
 
 If you are using **Poetry** (as used in this repository):
 
 ```bash
-poetry add gbt-core
+poetry add "gbt-core[neo4j]"
 ```
 
 ### Quick Start
@@ -44,7 +44,7 @@ gbt run
 ## 🏗 Architecture
 
 <p align="center">
-  <img src="assets/architecture-flow.png" alt="Architecture Flow" />
+  <img src="https://github.com/luuduccanh34/gbt-core/blob/main/assets/architecture-flow.png?raw=true" alt="Architecture Flow" />
 </p>
 
 ---
