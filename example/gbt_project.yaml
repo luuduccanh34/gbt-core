@@ -1,0 +1,6 @@
+version: "0.1.0"
+name: "gbt-neo4j"
+profiles: "production"
+
+model_paths: ["models"]
+target_path: "target"

@@ -1,0 +1,36 @@
+version: 1.0
+
+models:
+  type: node
+  label: vehicle
+  description: >
+    Vehicle Node represents a vehicle entity in the system. 
+    It contains information such as brand, model, vehicle class, 
+    and audit timestamps for tracking creation and updates.
+
+  properties:
+    - name: vehicle_id
+      description: Unique identifier for the vehicle
+      data_type: integer
+      constraints:
+        - IS UNIQUE
+
+    - name: brand
+      description: Brand or manufacturer of the vehicle
+      data_type: string
+
+    - name: model
+      description: Model name of the vehicle
+      data_type: string
+
+    - name: class
+      description: Classification or category of the vehicle (e.g., sedan, SUV, truck)
+      data_type: string
+
+    - name: created_date
+      description: Timestamp when the vehicle record was created
+      data_type: datetime
+
+    - name: updated_at
+      description: Timestamp when the vehicle record was last updated
+      data_type: datetime

@@ -1,0 +1,3 @@
+CREATE CONSTRAINT {{ name }} IF NOT EXISTS
+FOR (n:{{ label }})
+REQUIRE n.{{ property }} {{ rule }}
