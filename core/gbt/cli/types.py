@@ -8,11 +8,8 @@ class Command(Enum):
     These commands represent the primary actions that can be executed
     via the command-line interface.
     """
-    BUILD = "build"
     COMPILE = "compile"
     RUN = "run"
-    DEBUG = "debug"
-    INIT = "init"
 
     @classmethod
     def from_str(cls, s: str) -> "Command":

@@ -18,7 +18,7 @@ def log_error(msg: str, bold: bool = True) -> None:
     """Prints a formatted error message to the console with red color."""
     click.secho(f"❌ [ERROR] {msg}", fg="red", bold=bold)
 
-@click.command(name="run")
+@click.command(name="compile")
 @click.option(
     "--select",
     required=True,
@@ -31,20 +31,14 @@ def log_error(msg: str, bold: bool = True) -> None:
     type=str,
     help="Directory containing the profiles.yaml file (currently ignored in V1)."
 )
-@click.option(
-    "--target",
-    required=True,
-    type=str,
-    help="Target Graph Database name on Neo4j."
-)
-def compile(select: str, profiles_dir: str, target: str) -> None:
+def compile(select: str, profiles_dir: str) -> None:
     """
-    Execute DDL operations for a specific model against the target Graph Database.
+    Compile DDL statements for a specific model into target artifacts.
 
-    This command initializes the database connection and the schema builder engine,
-    then executes the compiled Cypher statements sequentially.
+    This command initializes the schema builder engine and renders the
+    compiled Cypher statements to disk.
     """
-    logger.info(f"Starting 'run' command for model: {select} on target: {target}")
+    logger.info("Starting 'compile' command for model: %s", select)
 
     engine = SchemaBuilderEngine(model_name=select)
 
