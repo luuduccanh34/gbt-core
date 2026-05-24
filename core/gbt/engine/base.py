@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
-
-from ..parser.manifest.model import ModelConfig
+from typing import Any, List
 
 class BaseCypherEngine(ABC):
     """
@@ -11,15 +10,13 @@ class BaseCypherEngine(ABC):
     """
 
     @abstractmethod
-    def compile(self, model_config: ModelConfig) -> str:
+    def compile(self) -> List[str]:
         """
         Compiles a model configuration into an executable Cypher query.
 
         Args:
-            model_config (ModelConfig): The configuration of the model to compile.
-
         Returns:
-            str: The fully compiled Cypher query string ready for execution.
+            List[str]: Compiled Cypher statements ready for execution.
 
         Raises:
             NotImplementedError: If the subclass fails to implement this method.
@@ -27,12 +24,12 @@ class BaseCypherEngine(ABC):
         raise NotImplementedError("The compile method must be implemented by subclasses.")
 
     @abstractmethod
-    def execute(self, cypher_query: str) -> None:
+    def execute(self, connector: Any = None) -> None:
         """
         Executes a given Cypher query against the target database.
 
         Args:
-            cypher_query (str): The Cypher query string to execute.
+            connector (Any): Optional database connector used to execute statements.
 
         Raises:
             NotImplementedError: If the subclass fails to implement this method.

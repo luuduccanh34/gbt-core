@@ -141,6 +141,8 @@ class SchemaBuilderEngine(BaseCypherEngine):
         try:
             env = Environment(loader=PackageLoader('core.gbt', 'templates'))
             constraint_template = env.get_template('ddl/create_constraint.cypher.j2')
+            index_template = env.get_template('ddl/create_index.cypher.j2')
+            fulltext_index_template = env.get_template('ddl/create_fulltext_index.cypher.j2')
 
             extracted_data = self.extract()
 
@@ -171,7 +173,45 @@ class SchemaBuilderEngine(BaseCypherEngine):
                         file_type='cypher'
                     )
 
-            # TODO: Implement Index compilation when index templates are added.
+            # Process and compile indexes
+            for index_info in extracted_data.get('indexes', []):
+                column = index_info['column']
+                for index_type in index_info.get('indexes', []):
+                    normalized_index_type = str(index_type).strip().lower()
+
+                    if normalized_index_type == 'index':
+                        index_name = f"{self.label}_{column}_index"
+                        cypher_ddl = index_template.render(
+                            name=index_name,
+                            label=self.label,
+                            property=column,
+                        )
+                        compile_model_name = index_name
+                    elif normalized_index_type == 'fulltext':
+                        index_name = f"{self.label}_{column}_fulltext_index"
+                        cypher_ddl = fulltext_index_template.render(
+                            name=index_name,
+                            label=self.label,
+                            property=column,
+                        )
+                        compile_model_name = index_name
+                    else:
+                        logger.warning(
+                            "Skipping unsupported index type '%s' for %s.%s",
+                            index_type,
+                            self.label,
+                            column,
+                        )
+                        continue
+
+                    cypher_statements.append(cypher_ddl)
+
+                    write_compile_cypher(
+                        cypher_statements=cypher_ddl,
+                        model_path=self.label,
+                        compile_model_name=compile_model_name,
+                        file_type='cypher'
+                    )
 
             logger.info(f"Successfully compiled {len(cypher_statements)} DDL statements for model '{self.label}'.")
 
