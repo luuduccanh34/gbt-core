@@ -1,7 +1,13 @@
 import logging
 from typing import Any, List, Iterator, Optional
-import trino
-from trino.auth import BasicAuthentication
+
+try:
+    import trino
+    from trino.auth import BasicAuthentication
+except ImportError:
+    trino = None
+    BasicAuthentication = None
+
 import urllib3
 from connectors.base import BaseConnector
 from variables.trino import TrinoVariables
@@ -62,7 +68,14 @@ class TrinoConnector(BaseConnector):
         self.verify = verify
         self.http_scheme = http_scheme
         self.extra_params = kwargs
-        self._conn: Optional[trino.dbapi.Connection] = None
+        self._conn: Optional[Any] = None
+
+        if trino is None:
+            logger.error("The 'trino' module is not installed.")
+            raise ImportError(
+                "Trino dependencies are missing! "
+                "Please install them using: pip install 'gbt-core[trino]'"
+            )
 
         logger.debug(
             f"Initialized TrinoConnector for user '{self.user}' at "
@@ -78,15 +91,14 @@ class TrinoConnector(BaseConnector):
         """Ensures the connection is closed when exiting the context manager."""
         self.close()
 
-    def connect(self) -> trino.dbapi.Connection:
+    def connect(self) -> Any:
         """
         Establish a connection to the Trino database.
 
         Returns:
-            trino.dbapi.Connection: The active Trino connection object.
+            Any: The active Trino connection object.
 
         Raises:
-            trino.exceptions.TrinoQueryError: If the connection to Trino fails.
             Exception: For other unexpected failures.
         """
         if self._conn is None:
