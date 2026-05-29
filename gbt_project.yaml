@@ -1,6 +1,0 @@
-version: "1.0"
-name: "vetc-neo4j"
-profiles: "production"
-
-model_paths: ["models"]
-target_path: "target"

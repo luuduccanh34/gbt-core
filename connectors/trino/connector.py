@@ -200,3 +200,4 @@ class TrinoConnector(BaseConnector):
                 cursor.close()
             except Exception as e:
                 logger.warning(f"Failed to close cursor properly: {e}")
+
