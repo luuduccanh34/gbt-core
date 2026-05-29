@@ -13,6 +13,7 @@ class Command(Enum):
     RUN = "run"
     DEBUG = "debug"
     INIT = "init"
+    DOCS = "docs"
 
     @classmethod
     def from_str(cls, s: str) -> "Command":

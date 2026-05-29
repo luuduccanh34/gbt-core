@@ -1,5 +1,6 @@
 # core/gbt/cli/main.py
 import importlib
+import logging
 from typing import List, Optional
 
 import click
@@ -9,6 +10,7 @@ from .types import Command
 TASK_MAPPING = {
     Command.COMPILE: "core.gbt.cli.commands.compile",
     Command.RUN: "core.gbt.cli.commands.run",
+    Command.DOCS: "core.gbt.cli.commands.docs",
 }
 
 
@@ -96,6 +98,12 @@ def cli() -> None:
 
     Use `gbt <command> --help` for detailed information about a specific command.
     """
+    # Suppress INFO/DEBUG level logs from ManifestLoader when using CLI
+    logging.getLogger('core.gbt.parser.manifest.loader').setLevel(logging.WARNING)
+    # Suppress INFO/DEBUG level logs from common functions when using CLI
+    logging.getLogger('core.gbt.common.gbt').setLevel(logging.WARNING)
+    # Suppress INFO/DEBUG level logs from common file operations when using CLI
+    logging.getLogger('core.gbt.common.file').setLevel(logging.WARNING)
     pass
 
 

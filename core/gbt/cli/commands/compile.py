@@ -2,7 +2,7 @@
 import logging
 import click
 
-from core.gbt.engine.ddl.schema_builder import SchemaBuilderEngine
+from core.gbt.engine.destinations.neo4j.ddl.schema_builder import SchemaBuilderEngine
 
 logger = logging.getLogger(__name__)
 

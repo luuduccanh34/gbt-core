@@ -1,0 +1,9 @@
+{# Template: core/gbt/templates/destinations/neo4j/ddl/create_constraint.cypher.j2 #}
+CREATE CONSTRAINT {{ constraint_name }} IF NOT EXISTS
+{% if model_type == 'relationship' -%}
+FOR ()-[r:{{ label_or_type }}]-()
+REQUIRE r.{{ property_name }} {{ rule }};
+{%- else -%}
+FOR (n:{{ label_or_type }})
+REQUIRE n.{{ property_name }} {{ rule }};
+{%- endif %}

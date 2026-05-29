@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from ..parser.manifest.model import ModelConfig
+from core.gbt.parser.manifest.model import ModelConfig
 
 class BaseCypherEngine(ABC):
     """

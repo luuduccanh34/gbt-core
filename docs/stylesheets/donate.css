@@ -1,0 +1,43 @@
+@keyframes wobble {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-15deg); }
+  75% { transform: rotate(15deg); }
+}
+.donate-icon {
+  position: fixed;
+  bottom: 20px;
+  right: 30px;
+  font-size: 32px;
+  cursor: pointer;
+  z-index: 1000;
+  animation: wobble 2s ease-in-out infinite;
+  transition: transform 0.2s;
+  user-select: none;
+}
+.donate-icon:hover {
+  transform: scale(1.1);
+  animation: none;
+}
+#thank-you-toast {
+  visibility: hidden;
+  min-width: 250px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 8px;
+  padding: 16px;
+  position: fixed;
+  z-index: 1001;
+  left: 50%;
+  bottom: 30px;
+  transform: translateX(-50%);
+  font-size: 16px;
+  opacity: 0;
+  transition: opacity 0.3s, bottom 0.3s, visibility 0.3s;
+  box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
+}
+#thank-you-toast.show {
+  visibility: visible;
+  opacity: 1;
+  bottom: 50px;
+}

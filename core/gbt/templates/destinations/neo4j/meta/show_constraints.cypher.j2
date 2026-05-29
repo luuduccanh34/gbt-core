@@ -1,0 +1,3 @@
+SHOW CONSTRAINTS YIELD name, labelsOrTypes
+WHERE '{{ node_label }}' IN labelsOrTypes
+RETURN name;

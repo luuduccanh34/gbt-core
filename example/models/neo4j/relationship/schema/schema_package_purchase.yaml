@@ -1,0 +1,55 @@
+version: 1.0
+
+models:
+  type: relationship
+  label: orders
+  physical_name: PURCHASED
+
+  source_node:
+    label: customer
+    key: gid
+    ref: buyer_gid
+
+  target_node:
+    label: package
+    key: package_id
+    ref: package_id
+
+  settings:
+    contract:
+      enforced: true
+    on_schema_error: skip_row
+
+    on_missing_node: skip
+
+  description: >
+      Represents a transaction where a customer purchased a specific package.
+
+  properties:
+    - name: purchase_id
+      description: Unique identifier of the package purchase transaction.
+      data_type: string
+
+    - name: package_id
+      description: Identifier of the purchased package.
+      data_type: integer
+
+    - name: buyer_gid
+      description: Global identifier of the customer who purchased the package.
+      data_type: string
+
+    - name: final_price
+      description: Final amount charged for the package purchase after discounts or adjustments.
+      data_type: float
+
+    - name: status
+      description: Current status of the package purchase transaction.
+      data_type: string
+
+    - name: created_at
+      description: Timestamp when the package purchase record was created.
+      data_type: datetime
+
+    - name: cust_type
+      description: Type or classification of the customer associated with the purchase.
+      data_type: string

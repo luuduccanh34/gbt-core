@@ -4,18 +4,14 @@ import logging
 from pathlib import Path
 from typing import Any
 
-# Configure basic logging for the module
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
-)
+
 logger = logging.getLogger(__name__)
 
 class FileHandler:
     """
     A utility class for handling standard file operations.
     Provides static methods to cleanly read from and write to various file formats.
-    Currently supports 'yaml' and 'json'.
+    Currently supports reading 'yaml' and 'json', and writing 'yaml', 'json', 'cypher', 'txt', and 'sql'.
     """
 
     @staticmethod
@@ -68,11 +64,12 @@ class FileHandler:
         Args:
             file_path (Path): The target path where the data should be saved.
             data (Any): The data payload to be serialized and written to the file.
-            file_type (str): The target format for serialization (e.g., 'yaml', 'json').
+            file_type (str): The target format for serialization (e.g., 'yaml', 'json', 'cypher', 'txt', 'sql').
 
         Raises:
             ValueError: If the requested file_type is not supported.
             IOError: If permissions or disk issues prevent writing to the file.
+            Exception: For any other unexpected errors during writing.
         """
         logger.info(f"Writing data to file: {file_path} with type: {file_type}")
         file_type = file_type.lower()
@@ -92,11 +89,21 @@ class FileHandler:
             elif file_type == "cypher":
                 with file_path.open("w", encoding="utf-8") as f:
                     # Expecting data to be a string representing cypher query
-                    f.write(data)
+                    f.write(str(data))
                     logger.debug(f"Successfully wrote cypher data to {file_path}")
+            elif file_type == "txt":
+                with file_path.open("w", encoding="utf-8") as f:
+                    # Expecting data to be a string representing text content
+                    f.write(str(data))
+                    logger.debug(f"Successfully wrote text data to {file_path}")
+            elif file_type == "sql":
+                with file_path.open("w", encoding="utf-8") as f:
+                    # Expecting data to be a string representing SQL query
+                    f.write(str(data))
+                    logger.debug(f"Successfully wrote sql data to {file_path}")
             else:
                 logger.error(f"Unsupported file type: '{file_type}'")
-                raise ValueError(f"Unsupported file type: '{file_type}'. Supported types are 'yaml', 'json', and 'cypher'.")
+                raise ValueError(f"Unsupported file type: '{file_type}'. Supported types are 'yaml', 'json', 'cypher', 'txt', and 'sql'.")
         except Exception as e:
             logger.error(f"Error writing to file {file_path}: {e}")
             raise

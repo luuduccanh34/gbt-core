@@ -1,0 +1,38 @@
+site_name: GBT Core Documentation
+site_description: Enterprise Graph Build Tool documentation
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - toc.integrate
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: getting-started/installation.md
+    - Quickstart: getting-started/quickstart.md
+  - Architecture:
+    - Core Engine: architecture/core-engine.md
+    - Parser: architecture/parser.md
+    - Templates: architecture/templates.md
+    - Validation:
+      - Overview: architecture/validation/overview.md
+      - Data Type Validation: architecture/validation/data-type.md
+  - Changelog: changelog.md
+  - Publishing: publish-to-pypi.md
+
+markdown_extensions:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+extra_css:
+  - stylesheets/donate.css
+extra_javascript:
+  - javascripts/donate.js

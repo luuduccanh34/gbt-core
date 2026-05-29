@@ -1,0 +1,5 @@
+MATCH (n:{{ node_label }})
+CALL {
+    WITH n
+    DETACH DELETE n
+} IN TRANSACTIONS OF 1000 ROWS;

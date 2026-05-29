@@ -2,17 +2,13 @@ import json
 import logging
 import yaml
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Tuple
 
 from .model import ModelConfig
 from ..project.loader import ProjectLoader, GbtProjectConfig
+from core.gbt.common.jinja_parser import JinjaParser
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s - %(levelname)s - %(message)s"
-    )
-
 class ManifestLoader:
     """
     A class to handle the loading and saving of the GBT manifest.
@@ -50,33 +46,101 @@ class ManifestLoader:
                 continue
 
             logger.info(f"Scanning directory '{model_dir}' for models...")
-
-            for ext in ("**/*.yml", "**/*.yaml"):
-                for yml_path in model_dir.glob(ext):
-                    model_name = yml_path.stem
-                    try:
-                        with yml_path.open("r", encoding="utf-8") as f:
-                            model_data = yaml.safe_load(f)
-
-                        if not isinstance(model_data, dict):
-                            logger.error(f"Invalid model configuration in '{yml_path}'. Expected a dictionary but got {type(model_data).__name__}.")
-                            continue
-
-                        model_config = ModelConfig(**model_data)
-
-                        if model_name in manifest:
-                            logger.warning(f"Model '{model_name}' is already defined. Overwriting with configuration from '{yml_path}'.")
-
-                        manifest[model_name] = model_config
-                        logger.debug(f"Successfully loaded model '{model_name}' from '{yml_path}'.")
-
-                    except yaml.YAMLError as exc:
-                        logger.error(f"Error parsing YAML file '{yml_path}': {exc}")
-                    except Exception as exc:
-                        logger.error(f"Unexpected error loading model from '{yml_path}': {exc}")
+            self._process_model_directory(model_dir, manifest)
 
         logger.info(f"Successfully loaded {len(manifest)} models into the manifest.")
         return manifest
+
+    def _process_model_directory(self, model_dir: Path, manifest: Dict[str, ModelConfig]) -> None:
+        """
+        Process all YAML files in a model directory to build the manifest.
+
+        Args:
+            model_dir (Path): The directory path to scan for YAML files.
+            manifest (Dict[str, ModelConfig]): The manifest target to append loaded models to.
+        """
+        for ext in ("**/*.yml", "**/*.yaml"):
+            for yml_path in model_dir.glob(ext):
+                self._load_model_from_yaml(yml_path, model_dir, manifest)
+
+    def _load_model_from_yaml(self, yml_path: Path, model_dir: Path, manifest: Dict[str, ModelConfig]) -> None:
+        """
+        Load a single model from a YAML file, resolving its script dependencies.
+
+        Args:
+            yml_path (Path): Path to the YAML model configuration.
+            model_dir (Path): Root model directory for resolving relative scripts.
+            manifest (Dict[str, ModelConfig]): Dictionary to register the resolved model.
+        """
+        try:
+            with yml_path.open("r", encoding="utf-8") as f:
+                model_data = yaml.safe_load(f)
+
+            if not isinstance(model_data, dict):
+                logger.error(f"Invalid model configuration in '{yml_path}'. Expected a dictionary but got {type(model_data).__name__}.")
+                return
+
+            if 'models' not in model_data or 'label' not in model_data['models']:
+                logger.error(f"Missing required 'models.label' field in '{yml_path}'. Tracking failed.")
+                return
+
+            model_name = model_data['models']['label']
+
+            # Find matching script file
+            script_content, script_path_str = self._find_and_read_script_file(model_dir, model_name)
+            original_script, connectors = JinjaParser().parse(script_content)
+
+            if 'script' not in model_data or model_data['script'] is None:
+                model_data['script'] = {}
+            model_data['script']['raw_script'] = script_content
+            model_data['script']['file_path'] = script_path_str
+            model_data['script']['original_script'] = original_script.strip()
+            model_data['script']['connector'] = connectors['connector']
+
+            model_config = ModelConfig(**model_data)
+
+            if model_name in manifest:
+                logger.warning(f"Model '{model_name}' is already defined. Overwriting with configuration from '{yml_path}'.")
+
+            manifest[model_name] = model_config
+            logger.debug(f"Successfully loaded model '{model_name}' from '{yml_path}'.")
+
+        except yaml.YAMLError as exc:
+            logger.error(f"Error parsing YAML file '{yml_path}': {exc}")
+            raise
+        except Exception as exc:
+            logger.error(f"Unexpected error loading model from '{yml_path}': {exc}")
+            raise
+
+    def _find_and_read_script_file(self, model_dir: Path, model_name: str) -> Tuple[str, str]:
+        """
+        Finds the corresponding SQL/Cypher/Txt script file for a given model name.
+        Reads its content and returns a tuple (script_content, script_file_path).
+
+        Args:
+            model_dir (Path): The directory to search in.
+            model_name (str): The name of the model to look up.
+
+        Returns:
+            Tuple[str, str]: Raw content of the script file and its string path.
+        """
+        found_script_files = []
+        extensions = (".sql", ".cypher", ".txt")
+        for script_ext in extensions:
+            matches = list(model_dir.rglob(f"{model_name}{script_ext}"))
+            found_script_files.extend(matches)
+
+        if len(found_script_files) != 1:
+            raise ValueError(
+                f"Expected exactly one script file for model '{model_name}' in '{model_dir}', "
+                f"but found {len(found_script_files)}: {[str(p) for p in found_script_files]}"
+            )
+
+        script_file = found_script_files[0]
+        with script_file.open("r", encoding="utf-8") as f:
+            script_content = f.read()
+
+        return script_content, str(script_file)
 
     def save(self, manifest: Dict[str, ModelConfig]) -> None:
         """

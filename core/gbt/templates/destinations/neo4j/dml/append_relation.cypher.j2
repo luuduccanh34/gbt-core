@@ -1,0 +1,15 @@
+{# Template: core/gbt/templates/destinations/neo4j/dml/append_relation.cypher.j2 #}
+UNWIND $batch_data AS row
+
+MATCH (source:{{ source_label }} { {{ source_key }}: row.{{ source_ref }} })
+
+MATCH (target:{{ target_label }} { {{ target_key }}: row.{{ target_ref }} })
+
+CREATE (source)-[r:{{ physical_name }}]->(target)
+
+{% if properties|length > 0 %}
+SET
+{% for prop in properties %}
+    r.{{ prop.name }} = row.{{ prop.name }}{% if not loop.last %},{% endif %}
+{% endfor %}
+{% endif %}

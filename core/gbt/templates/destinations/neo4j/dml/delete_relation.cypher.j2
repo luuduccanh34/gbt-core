@@ -1,0 +1,7 @@
+{# Template: core/gbt/templates/destinations/neo4j/dml/delete_relation.cypher.j2 #}
+MATCH ()-[r:{{ physical_name }}]-()
+
+CALL {
+    WITH r
+    DELETE r
+} IN TRANSACTIONS OF 10000 ROWS;

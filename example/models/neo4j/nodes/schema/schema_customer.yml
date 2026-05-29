@@ -3,6 +3,10 @@ version: 1.0
 models:
   type: node
   label: customer
+  settings:
+    contract:
+      enforced: true
+    on_schema_error: skip_row
   description: >
     Customer Node represents a customer in the system. It contains properties such as name, email, and phone number.
 

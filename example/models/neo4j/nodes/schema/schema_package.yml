@@ -1,0 +1,43 @@
+version: 1.0
+
+models:
+  type: node
+  label: package
+  settings:
+    contract:
+      enforced: true
+    on_schema_error: skip_row
+  description: >
+    Package Node represents a subscription or service package offered to customers.
+    It contains details like price, duration, and target audience.
+
+  properties:
+    - name: package_id
+      description: Internal Unique Identifier for the package.
+      data_type: integer
+      constraints:
+        - IS UNIQUE
+
+    - name: package_code
+      description: Business code representing the package (e.g., VIP_01, BASIC_02).
+      data_type: string
+
+    - name: name
+      description: Full display name of the package.
+      data_type: string
+
+    - name: target_customer
+      description: Target audience for this package (e.g., individual, enterprise).
+      data_type: string
+
+    - name: price
+      description: Monetary value / Price of the package.
+      data_type: float
+
+    - name: duration_value
+      description: Duration of the package validity (e.g., number of days or months).
+      data_type: integer
+
+    - name: status
+      description: Current operational status of the package (e.g., ACTIVE, INACTIVE).
+      data_type: string

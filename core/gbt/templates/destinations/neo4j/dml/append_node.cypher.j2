@@ -1,0 +1,6 @@
+UNWIND $batch_data AS row
+CREATE (n:{{ node_label }})
+SET
+{%- for prop in properties %}
+  n.{{ prop.name }} = row.{{ prop.name }}{% if not loop.last %},{% endif %}
+{%- endfor %}
